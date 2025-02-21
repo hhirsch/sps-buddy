@@ -31,6 +31,7 @@ func handleLine(input string) {
 				fmt.Printf("Success: Variable %s is camel case.\n", parts[0])
 			} else {
 				fmt.Printf("Error: Variable %s is not camel case.\n", parts[0])
+				isErrorDetected = true
 			}
 			return
 		}
@@ -38,6 +39,7 @@ func handleLine(input string) {
 
 	if inputWithoutWhiteSpaces == "VAR_INPUT" ||
 		inputWithoutWhiteSpaces == "VAR" ||
+		inputWithoutWhiteSpaces == "VAR_OUTPUT" ||
 		inputWithoutWhiteSpaces == "VAR_TEMP" {
 		parserIsInsideVariableBlock = true
 		return
@@ -58,6 +60,7 @@ func main() {
 	file, err := os.Open(fileName)
 	if err != nil {
 		fmt.Printf("Error reading file: %s.\n", err.Error())
+		os.Exit(1)
 	}
 
 	scanner := bufio.NewScanner(file)
@@ -68,8 +71,12 @@ func main() {
 
 	if err := scanner.Err(); err != nil {
 		fmt.Printf("Error scanning file: %s.\n", err.Error())
+		isErrorDetected = true
 	}
 
 	file.Close()
+	if isErrorDetected == true {
+		os.Exit(1)
+	}
 	os.Exit(0)
 }
