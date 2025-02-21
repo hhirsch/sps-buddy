@@ -4,16 +4,36 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 )
 
 var arguments []string = os.Args
 var parserIsInsideVariableBlock bool = false
+var isErrorDetected bool = false
+
+func isCamelCase(input string) bool {
+	expression := regexp.MustCompile(`^[a-z]+([A-Z][a-z]*)*$`)
+	return expression.MatchString(input)
+}
 
 func handleLine(input string) {
 	inputWithoutWhiteSpaces := strings.ReplaceAll(input, " ", "")
 	if parserIsInsideVariableBlock {
-
+		if strings.Contains(inputWithoutWhiteSpaces, "LibVersion") ||
+			strings.Contains(inputWithoutWhiteSpaces, "S7_SetPoint") {
+			fmt.Printf("System Call detected ignoring for now.\n")
+			return
+		}
+		if strings.Contains(inputWithoutWhiteSpaces, ":") {
+			parts := strings.Split(inputWithoutWhiteSpaces, ":")
+			if isCamelCase(parts[0]) {
+				fmt.Printf("Success: Variable %s is camel case.\n", parts[0])
+			} else {
+				fmt.Printf("Error: Variable %s is not camel case.\n", parts[0])
+			}
+			return
+		}
 	}
 
 	if inputWithoutWhiteSpaces == "VAR_INPUT" ||
