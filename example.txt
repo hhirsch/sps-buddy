@@ -3,6 +3,9 @@
 VERSION : 0.1
    VAR_INPUT 
       errorActive : Bool;
+      ErrorActive : Bool;
+      Error_Active : Bool;
+      sensor1 : Bool;      
       warningActive : Bool;
    END_VAR
 
