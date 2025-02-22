@@ -115,6 +115,9 @@ func main() {
 		if errorCounter > 0 {
 			fmt.Printf("Coding standards not met.\n")
 			os.Exit(1)
+		} else {
+			fmt.Printf("No coding standards violation detected.\n")
+			os.Exit(0)
 		}
 
 		if err != nil {
