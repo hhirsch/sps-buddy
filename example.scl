@@ -1,0 +1,60 @@
+﻿FUNCTION_BLOCK "FB_Messages"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      errorActive : Bool;
+      ErrorActive : Bool;
+      Error_Active : Bool;
+      sensor1 : Bool;      
+      warningActive : Bool;
+   END_VAR
+
+   VAR 
+      ALM_Error {InstructionName := 'Program_Alarm'; LibVersion := '1.0'} : Program_Alarm;
+      ALM_Warning {InstructionName := 'Program_Alarm'; LibVersion := '1.0'} : Program_Alarm;
+      instance { S7_SetPoint := 'True'} : String[30] := 'Ruehrer F1 Sicherung';
+      bmk { S7_SetPoint := 'True'} : String[10] := 'B1';
+      "counter" : UInt;
+      acknowledgeAlarms : Bool;
+      test : UInt;
+   END_VAR
+
+   VAR_TEMP 
+      messageTextIdx : UInt;
+      source : String[10];
+      ackAlarmsError : Bool;
+      ackAlarmsStatus : Word;
+   END_VAR
+
+
+BEGIN
+	
+	#messageTextIdx := "MSG_TEST_ERROR";
+	#source := 'B1';
+	#ALM_Error(SIG := #errorActive,
+	           SD_1 := #instance,
+	           SD_2 := #bmk,
+	           SD_3 := #messageTextIdx,
+	           SD_4 := #source);
+	
+	#messageTextIdx := "MSG_TEST_WARNING";
+	#ALM_Warning(SIG := #warningActive,
+	           SD_1 := #instance,
+	           SD_2 := #bmk,
+	           SD_3 := #messageTextIdx,
+	           SD_4 := #source);
+	
+	
+	IF #acknowledgeAlarms THEN
+	    #acknowledgeAlarms := FALSE;
+	    
+	    Ack_Alarms(MODE := 1,
+	               ERROR=>#ackAlarmsError,
+	               STATUS => #ackAlarmsStatus);
+	
+	END_IF;
+	
+	
+	
+	#counter := #counter + 1;
+END_FUNCTION_BLOCK
