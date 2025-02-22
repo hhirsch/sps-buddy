@@ -12,6 +12,11 @@ var arguments []string = os.Args
 var parserIsInsideVariableBlock bool = false
 var isErrorDetected bool = false
 
+func isCamelCaseAllowNumbers(input string) bool {
+	expression := regexp.MustCompile(`^[a-z]+([A-Z][a-z0-9]*)*$`)
+	return expression.MatchString(input)
+}
+
 func isCamelCase(input string) bool {
 	expression := regexp.MustCompile(`^[a-z]+([A-Z][a-z]*)*$`)
 	return expression.MatchString(input)
@@ -20,14 +25,19 @@ func isCamelCase(input string) bool {
 func handleLine(input string) {
 	inputWithoutWhiteSpaces := strings.ReplaceAll(input, " ", "")
 	if parserIsInsideVariableBlock {
-		if strings.Contains(inputWithoutWhiteSpaces, "LibVersion") ||
-			strings.Contains(inputWithoutWhiteSpaces, "S7_SetPoint") {
-			fmt.Printf("System Call detected ignoring for now.\n")
+		if strings.Contains(inputWithoutWhiteSpaces, "{") {
+			parts := strings.Split(inputWithoutWhiteSpaces, "{")
+			if isCamelCaseAllowNumbers(parts[0]) {
+				fmt.Printf("Success: Variable %s is camel case.\n", parts[0])
+			} else {
+				fmt.Printf("Error: Variable %s is not camel case.\n", parts[0])
+				isErrorDetected = true
+			}
 			return
 		}
 		if strings.Contains(inputWithoutWhiteSpaces, ":") {
 			parts := strings.Split(inputWithoutWhiteSpaces, ":")
-			if isCamelCase(parts[0]) {
+			if isCamelCaseAllowNumbers(parts[0]) {
 				fmt.Printf("Success: Variable %s is camel case.\n", parts[0])
 			} else {
 				fmt.Printf("Error: Variable %s is not camel case.\n", parts[0])
