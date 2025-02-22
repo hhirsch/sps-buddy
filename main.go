@@ -61,16 +61,11 @@ func handleLine(input string) {
 	return
 }
 
-func main() {
-	if len(arguments) < 2 {
-		fmt.Printf("Command needs an argument.\n")
-		os.Exit(1)
-	}
-	var fileName string = arguments[1]
+func processFile(fileName string) int {
 	file, err := os.Open(fileName)
 	if err != nil {
 		fmt.Printf("Error reading file: %s.\n", err.Error())
-		os.Exit(1)
+		return 1
 	}
 
 	scanner := bufio.NewScanner(file)
@@ -86,7 +81,17 @@ func main() {
 
 	file.Close()
 	if isErrorDetected == true {
+		return 1
+	}
+	return 0
+}
+
+func main() {
+	if len(arguments) < 2 {
+		fmt.Printf("Command needs an argument.\n")
 		os.Exit(1)
 	}
-	os.Exit(0)
+
+	var fileName string = arguments[1]
+	os.Exit(processFile(fileName))
 }
