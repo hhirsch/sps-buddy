@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -62,6 +63,7 @@ func handleLine(input string) {
 }
 
 func processFile(fileName string) int {
+	fmt.Printf("\nReading file: %s\n", fileName)
 	file, err := os.Open(fileName)
 	if err != nil {
 		fmt.Printf("Error reading file: %s.\n", err.Error())
@@ -92,6 +94,37 @@ func main() {
 		os.Exit(1)
 	}
 
-	var fileName string = arguments[1]
-	os.Exit(processFile(fileName))
+	if strings.Contains(arguments[1], ".scl") {
+		var fileName string = arguments[1]
+		os.Exit(processFile(fileName))
+	}
+
+	if strings.Contains(arguments[1], "--batch") {
+		var errorCounter int
+		err := filepath.WalkDir("./", func(path string, dirEntry os.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+			if !dirEntry.IsDir() && filepath.Ext(dirEntry.Name()) == ".scl" {
+				errorCounter += processFile(path)
+			}
+
+			return nil
+		})
+
+		if errorCounter > 0 {
+			fmt.Printf("Coding standards not met.\n")
+			os.Exit(1)
+		}
+
+		if err != nil {
+			fmt.Printf("Error in batch processing:  %v \n", err)
+			os.Exit(1)
+		}
+
+	}
+
+	fmt.Printf("Unexpected parameters.\n")
+	os.Exit(1)
+
 }
