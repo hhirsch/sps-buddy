@@ -5,7 +5,7 @@ A tool to check coding standards in structured text.
 sps-buddy example.scl
 ```
 
-Add steps like these to your github actions.
+Add steps like these to your github actions:
 ```
 - name: Install SPS-Buddy
   uses: jaxxstorm/action-install-gh-release@v1.10.0 
