@@ -31,7 +31,7 @@ func handleLine(input string) {
 			if isCamelCaseAllowNumbers(parts[0]) {
 				fmt.Printf("Success: Variable %s is camel case.\n", parts[0])
 			} else {
-				fmt.Printf("Error: Variable %s is not camel case.\n", parts[0])
+				fmt.Fprintf(os.Stderr, "Error: Variable %s is not camel case.\n", parts[0])
 				isErrorDetected = true
 			}
 			return
@@ -41,7 +41,7 @@ func handleLine(input string) {
 			if isCamelCaseAllowNumbers(parts[0]) {
 				fmt.Printf("Success: Variable %s is camel case.\n", parts[0])
 			} else {
-				fmt.Printf("Error: Variable %s is not camel case.\n", parts[0])
+				fmt.Fprintf(os.Stderr, "Error: Variable %s is not camel case.\n", parts[0])
 				isErrorDetected = true
 			}
 			return
@@ -66,7 +66,7 @@ func processFile(fileName string) int {
 	fmt.Printf("\nReading file: %s\n", fileName)
 	file, err := os.Open(fileName)
 	if err != nil {
-		fmt.Printf("Error reading file: %s.\n", err.Error())
+		fmt.Fprintf(os.Stderr, "Error reading file: %s.\n", err.Error())
 		return 1
 	}
 
@@ -77,7 +77,7 @@ func processFile(fileName string) int {
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Printf("Error scanning file: %s.\n", err.Error())
+		fmt.Fprintf(os.Stderr, "Error scanning file: %s.\n", err.Error())
 		isErrorDetected = true
 	}
 
@@ -113,7 +113,7 @@ func main() {
 		})
 
 		if errorCounter > 0 {
-			fmt.Printf("Coding standards not met.\n")
+			fmt.Fprintf(os.Stderr, "Coding standards not met.\n")
 			os.Exit(1)
 		} else {
 			fmt.Printf("No coding standards violation detected.\n")
@@ -121,7 +121,7 @@ func main() {
 		}
 
 		if err != nil {
-			fmt.Printf("Error in batch processing:  %v \n", err)
+			fmt.Fprintf(os.Stderr, "Error in batch processing:  %v \n", err)
 			os.Exit(1)
 		}
 
