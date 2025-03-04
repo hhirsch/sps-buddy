@@ -4,6 +4,17 @@ A tool to check coding standards in structured text.
 ```
 sps-buddy example.scl
 ```
+
+Add steps like these to your github actions.
+```
+- name: Install SPS-Buddy
+  uses: jaxxstorm/action-install-gh-release@v1.10.0 
+  with:
+    repo: hhirsch/sps-buddy
+    chmod: 0755
+- name: Check Code-Conventions
+  run: sps-buddy --batch > /dev/null
+```
 # Features
 - checks if your variable names are in mixed camel case
 - returns proper exit codes for use in CI pipelines
