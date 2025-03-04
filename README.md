@@ -1,5 +1,9 @@
 # SPS Buddy
 A tool to check coding standards in structured text.
+# Usage
+```
+sps-buddy example.scl
+```
 # Features
 - checks if your variable names are in mixed camel case
 - returns proper exit codes for use in CI pipelines
