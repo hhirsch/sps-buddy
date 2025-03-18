@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - lint
+      - fix/golangci-lint
   pull_request:
 
 permissions:
