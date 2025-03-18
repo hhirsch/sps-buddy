@@ -59,7 +59,6 @@ func handleLine(input string) {
 	if inputWithoutWhiteSpaces == "END_VAR" {
 		parserIsInsideVariableBlock = false
 	}
-	return
 }
 
 func processFile(fileName string) int {
@@ -82,7 +81,7 @@ func processFile(fileName string) int {
 	}
 
 	file.Close()
-	if isErrorDetected == true {
+	if isErrorDetected {
 		return 1
 	}
 	return 0
