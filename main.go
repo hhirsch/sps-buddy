@@ -101,16 +101,16 @@ func main() {
 	if strings.Contains(arguments[1], "--batch") {
 		var errorCounter int
 		err := filepath.WalkDir("./", func(path string, dirEntry os.DirEntry, err error) error {
-			if err != nil {
-				return err
-			}
 			if !dirEntry.IsDir() && filepath.Ext(dirEntry.Name()) == ".scl" {
 				errorCounter += processFile(path)
 			}
 
 			return nil
 		})
-
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error while trying to scan the directory: "+err.Error()+"\n")
+			os.Exit(1)
+		}
 		if errorCounter > 0 {
 			fmt.Fprintf(os.Stderr, "Coding standards not met.\n")
 			os.Exit(1)
