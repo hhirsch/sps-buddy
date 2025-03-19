@@ -108,7 +108,7 @@ func main() {
 			return nil
 		})
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error while trying to scan the directory: "+err.Error()+"\n")
+			fmt.Fprintf(os.Stderr, "Error while trying to scan the directory: %v\n", err)
 			os.Exit(1)
 		}
 		if errorCounter > 0 {
@@ -120,7 +120,7 @@ func main() {
 		}
 
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error in batch processing:  %v \n", err)
+			fmt.Fprintf(os.Stderr, "Error in batch processing:  %v\n", err)
 			os.Exit(1)
 		}
 
