@@ -23,6 +23,8 @@ jobs:
         go-version: '1.22'
     - name: Build
       run: go build ./
+    - name: Running Tests
+      run: go test ./
     - name: Compress Binary
       run: tar -czvf sps-buddy_linux_x86_64.tar.gz sps-buddy
     - name: Release
