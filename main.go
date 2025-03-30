@@ -3,9 +3,9 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/hhirsch/sps-buddy/internal/models/style"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 )
 
@@ -13,22 +13,12 @@ var arguments []string = os.Args
 var parserIsInsideVariableBlock bool = false
 var isErrorDetected bool = false
 
-func isCamelCaseAllowNumbers(input string) bool {
-	expression := regexp.MustCompile(`^[a-z]+([A-Z][a-z0-9]*)*$`)
-	return expression.MatchString(input)
-}
-
-func isCamelCase(input string) bool {
-	expression := regexp.MustCompile(`^[a-z]+([A-Z][a-z]*)*$`)
-	return expression.MatchString(input)
-}
-
 func handleLine(input string) {
 	inputWithoutWhiteSpaces := strings.ReplaceAll(input, " ", "")
 	if parserIsInsideVariableBlock {
 		if strings.Contains(inputWithoutWhiteSpaces, "{") {
 			parts := strings.Split(inputWithoutWhiteSpaces, "{")
-			if isCamelCaseAllowNumbers(parts[0]) {
+			if style.IsMixedCamelCase(parts[0]) {
 				fmt.Printf("Success: Variable %s is camel case.\n", parts[0])
 			} else {
 				fmt.Fprintf(os.Stderr, "Error: Variable %s is not camel case.\n", parts[0])
@@ -38,7 +28,7 @@ func handleLine(input string) {
 		}
 		if strings.Contains(inputWithoutWhiteSpaces, ":") {
 			parts := strings.Split(inputWithoutWhiteSpaces, ":")
-			if isCamelCaseAllowNumbers(parts[0]) {
+			if style.IsMixedCamelCase(parts[0]) {
 				fmt.Printf("Success: Variable %s is camel case.\n", parts[0])
 			} else {
 				fmt.Fprintf(os.Stderr, "Error: Variable %s is not camel case.\n", parts[0])
@@ -64,6 +54,13 @@ func handleLine(input string) {
 func processFile(fileName string) int {
 	fmt.Printf("\nReading file: %s\n", fileName)
 	file, err := os.Open(fileName)
+	defer func() {
+		err := file.Close()
+		if err != nil {
+			fmt.Printf("error closing file %v", err)
+		}
+	}()
+
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading file: %s.\n", err.Error())
 		return 1
@@ -80,7 +77,6 @@ func processFile(fileName string) int {
 		isErrorDetected = true
 	}
 
-	file.Close()
 	if isErrorDetected {
 		return 1
 	}
@@ -94,7 +90,7 @@ func main() {
 	}
 
 	if strings.Contains(arguments[1], ".scl") {
-		var fileName string = arguments[1]
+		var fileName = arguments[1]
 		os.Exit(processFile(fileName))
 	}
 
