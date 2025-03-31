@@ -8,7 +8,7 @@ sps-buddy example.scl
 Add steps like these to your github actions:
 ```
 - name: Install SPS-Buddy
-  uses: jaxxstorm/action-install-gh-release@v1.10.0 
+  uses: jaxxstorm/action-install-gh-release@v2.0.0 
   with:
     repo: hhirsch/sps-buddy
     chmod: 0755
