@@ -10,42 +10,59 @@ import (
 	"strings"
 )
 
+type Block int64
+
+const (
+	Variable Block = iota
+	Constant
+	None
+)
+
 var arguments []string = os.Args
 var parserIsInsideVariableBlock bool = false
 var isErrorDetected bool = false
-var variableBlockStartStrings = []string{"VAR_INPUT", "VAR", "VAR_OUTPUT", "VAR_TEMP"}
+var variableBlockStartStrings = []string{"VAR_INPUT", "VAR", "VAR_OUTPUT", "VAR_TEMP", "VAR_GLOBAL"}
+var currentBlock Block = None
 
-func checkVariableStyle(parts []string) {
-	if style.IsMixedCamelCase(parts[0]) {
-		fmt.Printf("Success: Variable %s is camel case.\n", parts[0])
+func checkVariableStyle(symbol string) {
+	if style.IsMixedCamelCase(symbol) {
+		fmt.Printf("Success: Variable %s is camel case.\n", symbol)
 	} else {
-		fmt.Fprintf(os.Stderr, "Error: Variable %s is not camel case.\n", parts[0])
+		fmt.Fprintf(os.Stderr, "Error: Variable %s is not camel case.\n", symbol)
 		isErrorDetected = true
 	}
 }
 
 func handleLine(input string) {
+	if strings.TrimSpace(input) == "VAR_GLOBAL CONSTANT" {
+		currentBlock = Constant
+	}
 	inputWithoutWhiteSpaces := strings.ReplaceAll(input, " ", "")
-	if parserIsInsideVariableBlock {
+	if currentBlock == Variable {
 		if strings.Contains(inputWithoutWhiteSpaces, "{") {
 			parts := strings.Split(inputWithoutWhiteSpaces, "{")
-			checkVariableStyle(parts)
+			checkVariableStyle(parts[0])
 			return
 		}
 		if strings.Contains(inputWithoutWhiteSpaces, ":") {
 			parts := strings.Split(inputWithoutWhiteSpaces, ":")
-			checkVariableStyle(parts)
+			checkVariableStyle(parts[0])
 			return
 		}
 	}
 
 	if slices.Contains(variableBlockStartStrings, inputWithoutWhiteSpaces) {
-		parserIsInsideVariableBlock = true
-		return
+		if currentBlock == None {
+			currentBlock = Variable
+			return
+		} else {
+			fmt.Fprintf(os.Stderr, "Error: Found beginning of new variable block before old one has ended: %v\n", input)
+			isErrorDetected = true
+		}
 	}
 
 	if inputWithoutWhiteSpaces == "END_VAR" {
-		parserIsInsideVariableBlock = false
+		currentBlock = None
 	}
 }
 
