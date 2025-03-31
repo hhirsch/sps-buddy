@@ -17,7 +17,7 @@ jobs:
       run: |
             go test ./... -coverprofile coverage.out -covermode count
 
-    - name: Quality Gate - Test coverage shall be above threshold
+    - name: Quality Gate
       env:
           TESTCOVERAGE_THRESHOLD: 22
       run: |
