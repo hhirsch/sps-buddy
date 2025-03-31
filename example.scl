@@ -19,6 +19,17 @@ VERSION : 0.1
       test : UInt;
    END_VAR
 
+   VAR_GLOBAL CONSTANT
+      MAX_HEIGHT      : INT := 100;
+      MAX_SAFE_HEIGHT : INT := MAX_HEIGHT - 5;
+      counter : INT := 2
+   END_VAR
+
+   VAR_GLOBAL
+      DEFAULT : INT := 2 
+      errors  : INT := 0
+   END_VAR
+    
    VAR_TEMP 
       messageTextIdx : UInt;
       source : String[10];

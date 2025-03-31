@@ -14,3 +14,8 @@ func IsCamelCase(input string) bool {
 	expression := regexp.MustCompile(`^[a-z]+([A-Z][a-z]*)*$`)
 	return expression.MatchString(input)
 }
+
+func IsMixedCapitalSnakeCase(input string) bool {
+	expression := regexp.MustCompile(`^[A-Z]+([A-Z_][0-9]*)*$`)
+	return expression.MatchString(input)
+}
