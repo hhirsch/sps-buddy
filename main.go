@@ -13,27 +13,26 @@ var arguments []string = os.Args
 var parserIsInsideVariableBlock bool = false
 var isErrorDetected bool = false
 
+func checkVariableStyle(parts []string) {
+	if style.IsMixedCamelCase(parts[0]) {
+		fmt.Printf("Success: Variable %s is camel case.\n", parts[0])
+	} else {
+		fmt.Fprintf(os.Stderr, "Error: Variable %s is not camel case.\n", parts[0])
+		isErrorDetected = true
+	}
+}
+
 func handleLine(input string) {
 	inputWithoutWhiteSpaces := strings.ReplaceAll(input, " ", "")
 	if parserIsInsideVariableBlock {
 		if strings.Contains(inputWithoutWhiteSpaces, "{") {
 			parts := strings.Split(inputWithoutWhiteSpaces, "{")
-			if style.IsMixedCamelCase(parts[0]) {
-				fmt.Printf("Success: Variable %s is camel case.\n", parts[0])
-			} else {
-				fmt.Fprintf(os.Stderr, "Error: Variable %s is not camel case.\n", parts[0])
-				isErrorDetected = true
-			}
+			checkVariableStyle(parts)
 			return
 		}
 		if strings.Contains(inputWithoutWhiteSpaces, ":") {
 			parts := strings.Split(inputWithoutWhiteSpaces, ":")
-			if style.IsMixedCamelCase(parts[0]) {
-				fmt.Printf("Success: Variable %s is camel case.\n", parts[0])
-			} else {
-				fmt.Fprintf(os.Stderr, "Error: Variable %s is not camel case.\n", parts[0])
-				isErrorDetected = true
-			}
+			checkVariableStyle(parts)
 			return
 		}
 	}
