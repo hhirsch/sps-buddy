@@ -1,30 +1,34 @@
-name: "Go Coverage"
 on:
   pull_request:
-  push:
-    branches:
+    branches: 
       - main
-
+    paths-ignore:
+      - "**/*.md"
+  
 jobs:
-  coverage:
+  test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
       with:
-        # default fetch-depth is insufficent to find previous coverage notes
-        fetch-depth: 10
+        go-version: '^1.22'
+    - name: Create Coverage Profile
+      run: |
+            go test ./... -coverprofile coverage.out -covermode count
 
-    - uses: gwatts/go-coverage-action@v2
-      id: coverage
-      with:
-        # Optional coverage threshold
-        # use fail-coverage to determine what should happen below this threshold
-        coverage-threshold: 80
-
-        # collect coverage for all packages beyond the one under test
-        cover-pkg: ./...
-
-        # Ignore code-generated files when calculating coverage totals
-        ignore-pattern: |
-          \.pb\.go$
-          \_string\.go$
+    - name: Quality Gate - Test coverage shall be above threshold
+      env:
+          TESTCOVERAGE_THRESHOLD: 0
+      run: |
+            echo "Quality Gate: checking test coverage is above threshold ..."
+            echo "Threshold             : $TESTCOVERAGE_THRESHOLD %"
+            totalCoverage=`go tool cover -func=coverage.out | grep total | grep -Eo '[0-9]+\.[0-9]+'`
+            echo "Current test coverage : $totalCoverage %"
+            if (( $(echo "$totalCoverage $TESTCOVERAGE_THRESHOLD" | awk '{print ($1 > $2)}') )); then
+                echo "OK"
+            else
+                echo "Current test coverage is below threshold. Please add more unit tests or adjust threshold to a lower value."
+                echo "Failed"
+                exit 1
+            fi
