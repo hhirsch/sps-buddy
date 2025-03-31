@@ -19,7 +19,6 @@ const (
 )
 
 var arguments []string = os.Args
-var parserIsInsideVariableBlock bool = false
 var isErrorDetected bool = false
 var variableBlockStartStrings = []string{"VAR_INPUT", "VAR", "VAR_OUTPUT", "VAR_TEMP", "VAR_GLOBAL"}
 var currentBlock Block = None
@@ -28,7 +27,16 @@ func checkVariableStyle(symbol string) {
 	if style.IsMixedCamelCase(symbol) {
 		fmt.Printf("Success: Variable %s is camel case.\n", symbol)
 	} else {
-		fmt.Fprintf(os.Stderr, "Error: Variable %s is not camel case.\n", symbol)
+		fmt.Fprintf(os.Stderr, "Error: Variable %s is not mixed camel case.\n", symbol)
+		isErrorDetected = true
+	}
+}
+
+func checkConstantStyle(symbol string) {
+	if style.IsMixedCapitalSnakeCase(symbol) {
+		fmt.Printf("Success: Constant %s is mixed capital snake case.\n", symbol)
+	} else {
+		fmt.Fprintf(os.Stderr, "Error: Constant %s is not mixed capital snake case.\n", symbol)
 		isErrorDetected = true
 	}
 }
@@ -36,6 +44,7 @@ func checkVariableStyle(symbol string) {
 func handleLine(input string) {
 	if strings.TrimSpace(input) == "VAR_GLOBAL CONSTANT" {
 		currentBlock = Constant
+		return
 	}
 	inputWithoutWhiteSpaces := strings.ReplaceAll(input, " ", "")
 	if currentBlock == Variable {
@@ -47,6 +56,14 @@ func handleLine(input string) {
 		if strings.Contains(inputWithoutWhiteSpaces, ":") {
 			parts := strings.Split(inputWithoutWhiteSpaces, ":")
 			checkVariableStyle(parts[0])
+			return
+		}
+	}
+
+	if currentBlock == Constant {
+		if strings.Contains(inputWithoutWhiteSpaces, ":") {
+			parts := strings.Split(inputWithoutWhiteSpaces, ":")
+			checkConstantStyle(parts[0])
 			return
 		}
 	}
