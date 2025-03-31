@@ -6,12 +6,14 @@ import (
 	"github.com/hhirsch/sps-buddy/internal/models/style"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 )
 
 var arguments []string = os.Args
 var parserIsInsideVariableBlock bool = false
 var isErrorDetected bool = false
+var variableBlockStartStrings = []string{"VAR_INPUT", "VAR", "VAR_OUTPUT", "VAR_TEMP"}
 
 func checkVariableStyle(parts []string) {
 	if style.IsMixedCamelCase(parts[0]) {
@@ -37,10 +39,7 @@ func handleLine(input string) {
 		}
 	}
 
-	if inputWithoutWhiteSpaces == "VAR_INPUT" ||
-		inputWithoutWhiteSpaces == "VAR" ||
-		inputWithoutWhiteSpaces == "VAR_OUTPUT" ||
-		inputWithoutWhiteSpaces == "VAR_TEMP" {
+	if slices.Contains(variableBlockStartStrings, inputWithoutWhiteSpaces) {
 		parserIsInsideVariableBlock = true
 		return
 	}
