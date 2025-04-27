@@ -16,7 +16,8 @@ Add steps like these to your github actions:
   run: sps-buddy --batch > /dev/null
 ```
 # Features
-- checks if your variable names are in mixed camel case
+- checks that your variable names are in mixed camel case
+- checks that your constant names are in capital snake case
 - returns proper exit codes for use in CI pipelines
 - output is routed to stdout and stderr so you can handle error messages and regular output separately
 
