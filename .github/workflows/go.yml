@@ -24,18 +24,23 @@ jobs:
     - name: Linux Build
       run: go build ./
     - name: Windows Build
-      run: GOOS=windows GOARCH=amd64 go build ./  
+      run: GOOS=windows GOARCH=amd64 go build ./
+    - name: Mac Build
+      run: GOOS=darwin GOARCH=amd64 go build -o sps-buddy-mac
     - name: Running Tests
       run: go test ./
     - name: Compress Linux Binary
       run: tar -czvf sps-buddy_linux_x86_64.tar.gz sps-buddy
     - name: Compress Windows Binary
       run: tar -czvf sps-buddy_windows_x86_64.tar.gz sps-buddy.exe
+    - name: Compress Mac Binary
+      run: tar --transform='s/sps-buddy-mac/sps-buddy/' -czvf sps-buddy_darwin_x86_64.tar.gz sps-buddy-mac
     - name: Release
       uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
             sps-buddy_linux_x86_64.tar.gz
-            sps-buddy_windows_x86_64.tar.gz 
+            sps-buddy_windows_x86_64.tar.gz
+            sps-buddy_darwin_x86_64.tar.gz 
             sps-buddy
